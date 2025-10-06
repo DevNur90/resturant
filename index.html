@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Food Order — Demo</title>
+  <style>
+    /* ===== Basic Reset & Vars ===== */
+    :root {
+      --primary: #d35400;
+      --dark: #222;
+      --muted: #777;
+      --bg: #f6f6f6;
+      --card: #fff;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html, body {
+      height: 100%;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--dark);
+      line-height: 1.45;
+    }
+    .container {
+      width: 92%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* ===== Header ===== */
+    .site-header {
+      background: #93c759;
+      box-shadow: 0 1px 6px rgba(0,0,0,.06);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+    }
+    .header-inner .left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo {
+      height: 44px;
+      width: auto;
+    }
+    .brand {
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    .main-nav {
+      display: flex;
+      gap: 14px;
+    }
+    .main-nav a {
+      color: white;
+      text-decoration: none;
+      padding: 6px 8px;
+      border-radius: 6px;
+    }
+    .main-nav a:hover {
+      background: rgba(0,0,0, .03);
+    }
+    .hamburger {
+      display: none;
+      background: none;
+      border: 0;
+      padding: 6px;
+      cursor: pointer;
+    }
+    .hamburger span {
+      display: block;
+      width: 20px;
+      height: 2px;
+      background: #333;
+      margin: 4px 0;
+      border-radius: 2px;
+    }
+
+    /* ===== Hero ===== */
+    .hero {
+      position: relative;
+      padding: 60px 0 40px;
+      background: #222;
+      color: #fff;
+      overflow: hidden;
+      background-image: url('food-hero.jpg');
+      background-size: cover;
+      background-position: center;
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.35));
+    }
+    .hero-inner {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      position: relative;
+      z-index: 2;
+    }
+    .hero-text {
+      flex: 1;
+      padding: 20px;
+    }
+    .hero-text h1 {
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+    }
+    .hero-text p {
+      color: rgba(255,255,255,.9);
+    }
+    .hero-buttons {
+      margin-top: 16px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: none;
+      color: inherit;
+    }
+    .btn.small {
+      padding: 6px 10px;
+      font-size: .9rem;
+    }
+    .btn.large {
+      padding: 12px 18px;
+      font-size: 1rem;
+    }
+    .btn.primary {
+      background: var(--primary);
+      color: #fff;
+    }
+    .btn.outline {
+      background: transparent;
+      border-color: #ccc;
+    }
+    .btn.block {
+      display: block;
+      width: 100%;
+    }
+    .hero-image img {
+      width: 340px;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 8px;
+      box-shadow: 0 6px 20px rgba(0,0,0,.25);
+    }
+
+    /* ===== Main grid ===== */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+      margin-top: 22px;
+      margin-bottom: 60px;
+    }
+
+    /* Menu Panel */
+    .menu-panel .section-top h2 {
+      font-size: 1.4rem;
+      margin-bottom: 6px;
+    }
+    .muted {
+      color: var(--muted);
+    }
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+      margin-top: 16px;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(0,0,0,.06);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      transition: transform .18s;
+    }
+    .card:hover {
+      transform: translateY(-6px);
+    }
+    .card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+    }
+    .card-body {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .card-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Order Panel */
+    .order-panel {
+      background: var(--card);
+      padding: 16px;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0,0,0,.06);
+      position: sticky;
+      top: 84px;
+      height: fit-content;
+    }
+    .toggle-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .toggle-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #eee;
+      background: #fafafa;
+      cursor: pointer;
+      text-align: center;
+    }
+    .toggle-btn.active {
+      background: #111;
+      color: #fff;
+      border-color: #111;
+    }
+    .address-section {
+      margin-bottom: 12px;
+    }
+    .address-section label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .address-section input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #e6e6e6;
+    }
+    .pickup-item {
+      background: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #f0f0f0;
+      margin-bottom: 8px;
+    }
+    .order-items {
+      min-height: 100px;
+      border-top: 1px dashed #eee;
+      padding-top: 12px;
+      margin-top: 8px;
+    }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px dashed #f2f2f2;
+    }
+    .cart-item .meta {
+      font-size: .95rem;
+    }
+    .cart-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .order-footer {
+      margin-top: 12px;
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 60;
+    }
+    .modal.hidden {
+      display: none;
+    }
+    .modal-panel {
+      background: #fff;
+      border-radius: 12px;
+      max-width: 720px;
+      width: 100%;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(0,0,0,.35);
+    }
+    .modal-panel.small {
+      max-width: 420px;
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid #f2f2f2;
+    }
+    .modal-body {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 14px;
+    }
+    .modal-image {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    .modal-section {
+      margin-bottom: 10px;
+    }
+    .checkbox-list label {
+      display: block;
+      margin-bottom: 6px;
+    }
+    textarea {
+      width: 100%;
+      min-height: 60px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #eee;
+    }
+    .qty-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .qty-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    #qtyVal {
+      min-width: 28px;
+      text-align: center;
+      font-weight: 700;
+    }
+    .modal-price {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    .modal-actions {
+      margin-top: 12px;
+    }
+
+    .small {
+      font-size: .9rem;
+    }
+    .link-like {
+      background: none;
+      border: 0;
+      color: var(--primary);
+      cursor: pointer;
+      padding: 0;
+    }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 900px) {
+      .hero-inner {
+        flex-direction: column;
+        gap: 14px;
+      }
+      .hero-image img {
+        width: 100%;
+        height: 200px;
+      }
+      .main-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+      .order-panel {
+        position: relative;
+        top: 0;
+      }
+      .hamburger {
+        display: inline-block;
+      }
+      .main-nav {
+        position: absolute;
+        left: 10px;
+        top: 68px;
+        background: #fff;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 8px 30px rgba(0,0,0,.08);
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .main-nav.show {
+        display: flex;
+      }
+      .hero-text h1 {
+        font-size: 1.5rem;
+      }
+      /*.modal-body {
+        grid-template-columns: 1fr;
+      }
+      .modal-image {
+        height: 160px;
+      }*/
+        
+      /* Modal responsive fix */
+.modal {
+  padding: 10px; /* মোবাইল এ পাশে স্পেস রাখবে */
+}
+
+.modal-panel {
+  width: 100%;
+  max-width: 480px; /* মোবাইল-ফ্রেন্ডলি সাইজ */
+  margin: 0 10px;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column; /* মোবাইলে এককলাম */
+}
+
+.modal-body img.modal-image {
+  width: 100%;
+  height: auto;
+  margin-bottom: 16px;
+}
+
+/* Ensuring btns etc fit */
+.modal-section, .checkbox-list, textarea, .qty-row {
+  width: 100%;
+}
+
+/* For very small screens */
+@media (max-width: 480px) {
+  .hero-text h1 {
+    font-size: 1.4rem;
+  }
+
+  .btn.large {
+    font-size: 0.9rem;
+    padding: 10px 14px;
+  }
+
+  .toggle-btn {
+    font-size: 0.9rem;
+    padding: 8px;
+  }
+
+  
+
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== Header ===== -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="left">
+        <button id="hamburger" class="hamburger" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+        <img src="logo.png" alt="Logo" class="logo" />
+        <!-- <span class="brand">Logo</span> -->
+      </div>
+
+      <nav id="mainNav" class="main-nav">
+        <a href="#menu">Menu</a>
+        <a href="#offers">Offers</a>
+        <a href="#contact">Contact</a>
+      </nav>
+
+      <div class="right">
+        <button class="btn small">Login</button>
+        <button class="btn primary small">Sign up</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Hero ===== -->
+  <section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="container hero-inner">
+      <div class="hero-text">
+        <h1>Fresh & Delicious Meals Delivered Fast</h1>
+        <p>Choose from pizzas, salads and chef's specials — made fresh to order.</p>
+        <div class="hero-buttons">
+          <a href="#menu" class="btn large primary">Order Now</a>
+          <a href="#menu" class="btn large">View Menu</a>
+        </div>
+      </div>
+      <div class="hero-image">
+        <img src="1food-hero.jpg" alt="Delicious food">
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Main: Left Menu + Right Order Sidebar ===== -->
+  <main class="container main-grid" id="menu">
+    <!-- Left: Menu -->
+    <section class="menu-panel">
+      <div class="section-top">
+        <h2>House Favorites</h2>
+        <p class="muted">Popular choices — click an item to customize.</p>
+      </div>
+
+      <div class="cards-grid" id="productList">
+      <!--   <article class="card" data-name="Chicken Pizza" data-price="10.99" data-img="https://slice-menu-assets-prod.imgix.net/37881/1703293414_c7c4125da7?fit=crop&w=160&h=16">
+          <img src="https://slice-menu-assets-prod.imgix.net/37881/1703293414_c7c4125da7?fit=crop&w=160&h=160" alt="Chicken Pizza">
+          <div class="card-body">
+            <h3>Chicken Pizza</h3>
+            <p class="muted small">Classic cheese & chicken.</p>
+            <div class="card-row">
+              <strong class="price">$10.99</strong>
+              <button class="btn small outline open-item">Add cart</button>
+            </div>
+          </div>
+        </article> -->
+
+        <article class="card" data-name="Veggie Pizza" data-price="9.99" data-img="pizza.jpg">
+          <img src="pizza.jpg" alt="Veggie Pizza">
+          <div class="card-body">
+            <h3>Veggie Pizza</h3>
+            <p class="muted small">Green pepper, tomato, onion...</p>
+            <div class="card-row">
+              <strong class="price">$9.99</strong>
+              <button class="btn small outline open-item">Add cart</button>
+            </div>
+          </div>
+        </article>
+        <!-- ---------------- -->
+        <article class="card" data-name="Veggie Pizza" data-price="9.99" data-img="pizza.jpg">
+          <img src="pizza.jpg" alt="Veggie Pizza">
+          <div class="card-body">
+            <h3>Veggie Pizza</h3>
+            <p class="muted small">Green pepper, tomato, onion...</p>
+            <div class="card-row">
+              <strong class="price">$9.99</strong>
+              <button class="btn small outline open-item">Add cart</button>
+            </div>
+          </div>
+        </article>
+        <article class="card" data-name="Veggie Pizza" data-price="9.99" data-img="pizza.jpg">
+          <img src="pizza.jpg" alt="Veggie Pizza">
+          <div class="card-body">
+            <h3>Veggie Pizza</h3>
+            <p class="muted small">Green pepper, tomato, onion...</p>
+            <div class="card-row">
+              <strong class="price">$9.99</strong>
+              <button class="btn small outline open-item">Add cart</button>
+            </div>
+          </div>
+        </article>
+        <article class="card" data-name="Veggie Pizza" data-price="9.99" data-img="pizza.jpg">
+          <img src="pizza.jpg" alt="Veggie Pizza">
+          <div class="card-body">
+            <h3>Veggie Pizza</h3>
+            <p class="muted small">Green pepper, tomato, onion...</p>
+            <div class="card-row">
+              <strong class="price">$9.99</strong>
+              <button class="btn small outline open-item">Add cart</button>
+            </div>
+          </div>
+        </article>
+        <article class="card" data-name="Veggie Pizza" data-price="9.99" data-img="pizza.jpg">
+          <img src="pizza.jpg" alt="Veggie Pizza">
+          <div class="card-body">
+            <h3>Veggie Pizza</h3>
+            <p class="muted small">Green pepper, tomato, onion...</p>
+            <div class="card-row">
+              <strong class="price">$9.99</strong>
+              <button class="btn small outline open-item">Add cart</button>
+            </div>
+          </div>
+        </article>
+        <article class="card" data-name="Veggie Pizza" data-price="9.99" data-img="pizza.jpg">
+          <img src="pizza.jpg" alt="Veggie Pizza">
+          <div class="card-body">
+            <h3>Veggie Pizza</h3>
+            <p class="muted small">Green pepper, tomato, onion...</p>
+            <div class="card-row">
+              <strong class="price">$9.99</strong>
+              <button class="btn small outline open-item">Add cart</button>
+            </div>
+          </div>
+        </article>
+        <article class="card" data-name="Veggie Pizza" data-price="9.99" data-img="pizza.jpg">
+          <img src="pizza.jpg" alt="Veggie Pizza">
+          <div class="card-body">
+            <h3>Veggie Pizza</h3>
+            <p class="muted small">Green pepper, tomato, onion...</p>
+            <div class="card-row">
+              <strong class="price">$9.99</strong>
+              <button class="btn small outline open-item">Add cart</button>
+            </div>
+          </div>
+        </article>
+        <article class="card" data-name="Veggie Pizza" data-price="9.99" data-img="pizza.jpg">
+          <img src="pizza.jpg" alt="Veggie Pizza">
+          <div class="card-body">
+            <h3>Veggie Pizza</h3>
+            <p class="muted small">Green pepper, tomato, onion...</p>
+            <div class="card-row">
+              <strong class="price">$9.99</strong>
+              <button class="btn small outline open-item">Add cart</button>
+            </div>
+          </div>
+        </article>
+        <article class="card" data-name="Veggie Pizza" data-price="9.99" data-img="pizza.jpg">
+          <img src="pizza.jpg" alt="Veggie Pizza">
+          <div class="card-body">
+            <h3>Veggie Pizza</h3>
+            <p class="muted small">Green pepper, tomato, onion...</p>
+            <div class="card-row">
+              <strong class="price">$9.99</strong>
+              <button class="btn small outline open-item">Add cart</button>
+            </div>
+          </div>
+        </article>
+        
+        <article class="card" data-name="Veggie Pizza" data-price="9.99" data-img="pizza.jpg">
+          <img src="pizza.jpg" alt="Veggie Pizza">
+          <div class="card-body">
+            <h3>Veggie Pizza</h3>
+            <p class="muted small">Green pepper, tomato, onion...</p>
+            <div class="card-row">
+              <strong class="price">$9.99</strong>
+              <button class="btn small outline open-item">Add cart</button>
+            </div>
+          </div>
+        </article>
+        
+        <article class="card" data-name="Veggie Pizza" data-price="9.99" data-img="pizza.jpg">
+          <img src="pizza.jpg" alt="Veggie Pizza">
+          <div class="card-body">
+            <h3>Veggie Pizza</h3>
+            <p class="muted small">Green pepper, tomato, onion...</p>
+            <div class="card-row">
+              <strong class="price">$9.99</strong>
+              <button class="btn small outline open-item">Add cart</button>
+            </div>
+          </div>
+        </article>
+        
+
+
+        <!-- -------------------- -->
+      </div>
+    </section>
+
+    <!-- Right: Order Sidebar -->
+    <aside class="order-panel" id="orderPanel">
+      <h3>Your Order</h3>
+
+      <div class="toggle-row">
+        <button id="deliveryBtn" class="toggle-btn active" data-type="delivery">
+          Delivery<br><span class="muted small">45 - 60 min</span>
+        </button>
+        <button id="pickupBtn" class="toggle-btn" data-type="pickup">
+          Pickup<br><span class="muted small">20 - 30 min</span>
+        </button>
+      </div>
+
+      <div id="addressSection" class="address-section">
+        <label for="addr">Delivery Address</label>
+        <input id="addr" placeholder="Enter your delivery address" />
+        <div class="small muted">ASAP • <button id="changeTime" class="link-like">Change</button></div>
+      </div>
+
+      <div id="pickupSection" class="address-section hidden">
+        <label>Pickup Location</label>
+        <div class="pickup-item">
+          <strong>Bayleaf — Broadway</strong>
+          <div class="muted small">864 Broadway, Buffalo, NY</div>
+          <button id="pickupChoose" class="btn small outline">Choose</button>
+        </div>
+      </div>
+
+      <div class="order-items" id="cartItems">
+        <p class="muted">No items in your order yet</p>
+      </div>
+
+      <div class="order-footer">
+        <div class="order-total">
+          <div>Subtotal</div>
+          <div id="subtotal">$0.00</div>
+        </div>
+        <button id="checkoutBtn" class="btn primary block">Checkout</button>
+      </div>
+    </aside>
+  </main>
+
+  <!-- ===== Product Modal / Popup (Customize) ===== -->
+  <div id="productModal" class="modal hidden" aria-hidden="true">
+    <div class="modal-panel">
+      <header class="modal-header">
+        <h3 id="modalTitle">Item</h3>
+        <button class="close-modal" id="closeModal" aria-label="Close">&times;</button>
+      </header>
+
+      <div class="modal-body">
+        <img id="modalImage" src="" alt="" class="modal-image">
+
+        <section class="modal-section">
+          <h4>Choose Add-ons</h4>
+          <div id="toppingsList" class="checkbox-list"></div>
+        </section>
+
+        <section class="modal-section">
+          <h4>Notes for the kitchen</h4>
+          <textarea id="note" placeholder="Allergies / special instructions"></textarea>
+        </section>
+
+        <section class="modal-section qty-row">
+          <div class="qty-controls">
+            <button id="qtyMinus" class="btn small">−</button>
+            <span id="qtyVal">1</span>
+            <button id="qtyPlus" class="btn small">+</button>
+          </div>
+          <div class="modal-price">
+            <div>Price</div>
+            <div id="modalPrice">$0.00</div>
+          </div>
+        </section>
+
+        <div class="modal-actions">
+          <button id="addToCartBtn" class="btn primary block">Add to Order</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Pickup Selector Modal (optional) ===== -->
+  <div id="pickupModal" class="modal hidden" aria-hidden="true">
+    <div class="modal-panel small">
+      <header class="modal-header">
+        <h3>Choose Pickup Time</h3>
+        <button class="close-modal" id="closePickupModal">&times;</button>
+      </header>
+      <div class="modal-body">
+        <p class="muted">Select a pickup time:</p>
+        <div class="time-list">
+          <button class="btn small outline time-btn">ASAP (20-30 min)</button>
+          <button class="btn small outline time-btn">In 30 minutes</button>
+          <button class="btn small outline time-btn">In 1 hour</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== Simple Front-end logic for modal, toppings, cart, delivery/pickup =====
+
+    // ===== Elements =====
+const productListEl = document.getElementById('productList');
+const productModal = document.getElementById('productModal');
+const pickupModal = document.getElementById('pickupModal');
+const closeModalBtn = document.getElementById('closeModal');
+const closePickupModalBtn = document.getElementById('closePickupModal');
+const modalTitle = document.getElementById('modalTitle');
+const modalImage = document.getElementById('modalImage');
+const toppingsList = document.getElementById('toppingsList');
+const qtyVal = document.getElementById('qtyVal');
+const qtyMinus = document.getElementById('qtyMinus');
+const qtyPlus = document.getElementById('qtyPlus');
+const modalPriceEl = document.getElementById('modalPrice');
+const addToCartBtn = document.getElementById('addToCartBtn');
+const cartItemsEl = document.getElementById('cartItems');
+const subtotalEl = document.getElementById('subtotal');
+const deliveryBtn = document.getElementById('deliveryBtn');
+const pickupBtn = document.getElementById('pickupBtn');
+const addressSection = document.getElementById('addressSection');
+const pickupSection = document.getElementById('pickupSection');
+const hamburgerBtn = document.getElementById('hamburger');
+const mainNav = document.getElementById('mainNav');
+
+let currentBasePrice = 0;
+let currentQty = 1;
+let currentItemName = '';
+let currentImage = '';
+let cart = [];
+
+const toppings = [
+  { name: 'Onions', price: 0.5 },
+  { name: 'Olives', price: 0.5 },
+  { name: 'Broccoli', price: 0.5 },
+  { name: 'Extra Cheese', price: 1.25 }
+];
+
+function formatPrice(num) {
+  return '$' + Number(num).toFixed(2);
+}
+
+function renderToppings() {
+  toppingsList.innerHTML = '';
+  toppings.forEach((t, i) => {
+    const lbl = document.createElement('label');
+    lbl.innerHTML = `<input type="checkbox" data-price="${t.price}"> ${t.name} (+${formatPrice(t.price)})`;
+    toppingsList.appendChild(lbl);
+  });
+}
+
+function updateModalPrice() {
+  let extras = 0;
+  toppingsList.querySelectorAll('input[type="checkbox"]:checked').forEach(c => {
+    extras += parseFloat(c.getAttribute('data-price'));
+  });
+  const total = (currentBasePrice + extras) * currentQty;
+  modalPriceEl.textContent = formatPrice(total);
+}
+
+function openProductModal(name, price, img) {
+  currentItemName = name;
+  currentBasePrice = parseFloat(price);
+  currentQty = 1;
+  currentImage = img || '';
+  modalTitle.textContent = name;
+  modalImage.src = img || '';
+  qtyVal.textContent = currentQty;
+
+  renderToppings();
+  updateModalPrice();
+
+  toppingsList.querySelectorAll('input').forEach(cb => {
+    cb.onchange = updateModalPrice;
+  });
+
+  productModal.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeProductModal() {
+  productModal.classList.add('hidden');
+  document.body.style.overflow = '';
+  document.getElementById('note').value = '';
+}
+
+qtyMinus.addEventListener('click', () => {
+  if (currentQty > 1) currentQty--;
+  qtyVal.textContent = currentQty;
+  updateModalPrice();
+});
+qtyPlus.addEventListener('click', () => {
+  currentQty++;
+  qtyVal.textContent = currentQty;
+  updateModalPrice();
+});
+
+addToCartBtn.addEventListener('click', () => {
+  const checked = toppingsList.querySelectorAll('input[type="checkbox"]:checked');
+  const extras = Array.from(checked).map(c => ({
+    name: c.parentNode.textContent.trim(),
+    price: parseFloat(c.getAttribute('data-price'))
+  }));
+  const note = document.getElementById('note').value || '';
+  const priceNum = parseFloat(modalPriceEl.textContent.replace('$', '')) || 0;
+
+  const item = {
+    id: Date.now(),
+    name: currentItemName,
+    qty: currentQty,
+    price: priceNum,
+    note,
+    extras
+  };
+
+  cart.push(item);
+  closeProductModal();
+  renderCart();
+});
+
+function renderCart() {
+  cartItemsEl.innerHTML = '';
+  if (cart.length === 0) {
+    cartItemsEl.innerHTML = '<p class="muted">No items in your order yet</p>';
+    subtotalEl.textContent = '$0.00';
+    return;
+  }
+
+  let sub = 0;
+  cart.forEach(item => {
+    sub += item.price;
+    const div = document.createElement('div');
+    div.className = 'cart-item';
+    div.innerHTML = `
+      <div class="meta">
+        <strong>${item.qty} × ${item.name}</strong><br>
+        <small class="muted">${item.extras.map(e => e.name).join(', ')} ${item.note ? '• Note: ' + item.note : ''}</small>
+      </div>
+      <div class="cart-actions">
+        <strong>${formatPrice(item.price)}</strong>
+        <button class="btn small outline" onclick="removeCartItem(${item.id})">Remove</button>
+      </div>
+    `;
+    cartItemsEl.appendChild(div);
+  });
+
+  subtotalEl.textContent = formatPrice(sub);
+}
+
+function removeCartItem(id) {
+  cart = cart.filter(item => item.id !== id);
+  renderCart();
+}
+
+// Product click listener
+productListEl.addEventListener('click', e => {
+  const card = e.target.closest('.card');
+  if (!card) return;
+
+  const name = card.getAttribute('data-name');
+  const price = card.getAttribute('data-price');
+  const img = card.getAttribute('data-img');
+
+  openProductModal(name, price, img);
+});
+
+// Close modals
+closeModalBtn.addEventListener('click', closeProductModal);
+closePickupModalBtn && closePickupModalBtn.addEventListener('click', () => {
+  pickupModal.classList.add('hidden');
+  document.body.style.overflow = '';
+});
+
+// Delivery / Pickup toggle
+deliveryBtn.addEventListener('click', () => {
+  deliveryBtn.classList.add('active');
+  pickupBtn.classList.remove('active');
+  addressSection.classList.remove('hidden');
+  pickupSection.classList.add('hidden');
+});
+
+pickupBtn.addEventListener('click', () => {
+  deliveryBtn.classList.remove('active');
+  pickupBtn.classList.add('active');
+  addressSection.classList.add('hidden');
+  pickupSection.classList.remove('hidden');
+});
+
+// Hamburger toggle
+hamburgerBtn.addEventListener('click', () => {
+  mainNav.classList.toggle('show');
+});
+
+  </script>
+
+</body>
+</html>
